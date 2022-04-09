@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "FridgeInventorySystem",
+    "slug": "FridgeInventorySystem",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "FridgeInventorySystem"
+}
