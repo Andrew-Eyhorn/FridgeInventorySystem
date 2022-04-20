@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "FridgeInventorySystem.app"
-               BlueprintName = "FridgeInventorySystem"
-               ReferencedContainer = "container:FridgeInventorySystem.xcodeproj">
+               BuildableName = "myreactapp.app"
+               BlueprintName = "myreactapp"
+               ReferencedContainer = "container:myreactapp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "FridgeInventorySystemTests.xctest"
-               BlueprintName = "FridgeInventorySystemTests"
-               ReferencedContainer = "container:FridgeInventorySystem.xcodeproj">
+               BuildableName = "myreactappTests.xctest"
+               BlueprintName = "myreactappTests"
+               ReferencedContainer = "container:myreactapp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "FridgeInventorySystem.app"
-            BlueprintName = "FridgeInventorySystem"
-            ReferencedContainer = "container:FridgeInventorySystem.xcodeproj">
+            BuildableName = "myreactapp.app"
+            BlueprintName = "myreactapp"
+            ReferencedContainer = "container:myreactapp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "FridgeInventorySystem.app"
-            BlueprintName = "FridgeInventorySystem"
-            ReferencedContainer = "container:FridgeInventorySystem.xcodeproj">
+            BuildableName = "myreactapp.app"
+            BlueprintName = "myreactapp"
+            ReferencedContainer = "container:myreactapp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

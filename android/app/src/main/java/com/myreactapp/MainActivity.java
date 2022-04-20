@@ -1,4 +1,4 @@
-package com.fridgeinventorysystem;
+package com.myreactapp;
 
 import android.os.Build;
 import android.os.Bundle;

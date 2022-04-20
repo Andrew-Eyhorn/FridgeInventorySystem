@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "FridgeInventorySystem",
-    "slug": "FridgeInventorySystem",
+    "name": "my-react-app",
+    "slug": "my-react-app",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
     ]
   },
-  "name": "FridgeInventorySystem"
+  "name": "my-react-app"
 }

@@ -1,5 +1,5 @@
 {
-  "name": "fridgeinventorysystem",
+  "name": "my-react-app",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -9,16 +9,17 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "dayjs": "^1.11.0",
-    "deepmerge": "^4.2.2",
+    "@react-native-community/datetimepicker": "4.0.0",
+    "dayjs": "^1.11.1",
     "expo": "~44.0.2",
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
+    "lodash": "^4.17.21",
     "react": "17.0.1",
-    "react-data-table-component": "^7.4.7",
-    "react-data-table-component-extensions": "^1.5.2",
     "react-dom": "17.0.1",
-    "react-native": "0.64.3",
+    "react-native": "^0.64.2",
+    "react-native-modal-datetime-picker": "^13.1.2",
+    "react-native-paper": "^4.12.0",
     "react-native-web": "0.17.1"
   },
   "devDependencies": {
