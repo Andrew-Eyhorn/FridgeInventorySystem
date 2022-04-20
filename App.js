@@ -1,18 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Alert, Modal, TextInput, Button } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import dayjs from 'dayjs'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const lodash = require("lodash");
-var sortedColumn = 'bestbeforedate'
 const ItemInput = (props) => {
-  const [text1, setText1] = useState(props.row.item);
-  const [text2, setText2] = useState(props.row.amount);
-  const [text3, setText3] = useState('');
+  const [itemName, setItemName] = useState(props.row.item);
+  const [itemAmount, setItemAmount] = useState(props.row.amount);
+  const [itemDate, setItemDate] = useState(props.row.bestbeforedate);
+  useEffect(() => {
+    validation()
+  }, [itemName, itemAmount])
   function onTextChanged(text) {
-    setText2(text.replace(/[^0-9]/g, '')
+    setItemAmount(text.replace(/[^0-9]/g, '')
     )
+  }
+  const [validInput, validateInput] = useState(false)
+  function validation() {
+    let isValid = false;
+    if (itemName.trim() !== '' && itemAmount.trim() !== '') {
+      isValid = true;
+    }
+    if (isValid !== validInput) {
+      validateInput(isValid);
+
+    }
   }
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const showDatePicker = () => {
@@ -22,8 +36,8 @@ const ItemInput = (props) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = (date) => {
-    setText3(dayjs(date).format('YYYY-MM-DD'))
-    console.log(text3);
+    setItemDate(dayjs(date).format('YYYY-MM-DD'))
+    validation()
     hideDatePicker();
   };
   return (<Modal
@@ -35,80 +49,91 @@ const ItemInput = (props) => {
       setModalVisible(!modalVisible);
     }}
   >
-      <View style={styles.modal}>
-        <Text>Enter Info</Text>
-        <TextInput
-          style={{ height: '10%' }}
-          placeholder="Enter Name of Item"
-          onChangeText={newText => setText1(newText)}
-          defaultValue={props.row.item}
-        />
-        <TextInput
-          style={{ height: '10%' }}
-          placeholder="Enter Amount of this Item"
-          keyboardType='numeric'
-          onChangeText={value => onTextChanged(value)}
-          value={text2}
-        />
-        <Text>{dayjs(text3).format('DD/MM/YYYY')}</Text>
-        {/* <TextInput
-          style={{ height: 40 }}
-          placeholder="Enter Expiry Date"
-          onChangeText={newText => setText3(newText)}
-          defaultValue={props.row.bestbeforedate}
-        /> */}
-        <Button title="Show Date Picker" onPress={showDatePicker}/>
-         <DateTimePickerModal
+    <View style={styles.modal}>
+      <Text>Enter Info</Text>
+      <TextInput
+        style={{ height: '10%' }}
+        placeholder="Enter Name of Item"
+        onChangeText={newText => setItemName(newText)}
+        defaultValue={props.row.item}
+      />
+      <TextInput
+        style={{ height: '10%' }}
+        placeholder="Enter Amount of this Item"
+        keyboardType='numeric'
+        onChangeText={value => onTextChanged(value)}
+        value={itemAmount}
+      />
+      <Text>{dayjs(itemDate).format('DD/MM/YYYY')}</Text>
+      <Button title="Show Date Picker" onPress={showDatePicker} />
+      <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
-        <Button
-          title='Confirm'
-          onPress={() => {
-            props.toggleModal(false);
-            console.log(props.row.id)
-            if (props.row.id === '') {
-              props.data.push({
-                id: props.data.length + 1,
-                item: text1.toString(),
-                amount: parseInt(text2),
-                bestbeforedate: text3.toString()
-              });
-            } else {
-              props.data[props.row.id - 1] = {
-                id: props.row.id,
-                item: text1.toString(),
-                amount: parseInt(text2),
-                bestbeforedate: text3.toString()
-              }
-            };
-            props.dataUpdate(props.data); console.log(props.data)
-          }}
-          disbled = {() => {
-            if (text2 && text2 && text3 === '' ) {
-              return true
-            } else {return false}}}
-        >
-        </Button>
-        <Button
-          title='Cancel'
-          style={styles.button}
-          onPress={() => props.toggleModal(false)} />
-      </View>
+      <Button
+        title='Confirm'
+        onPress={() => {
+          props.toggleModal(false);
+          console.log(props.row.id)
+          if (props.row.id === '') {
+            props.data.push({
+              id: props.data.length + 1,
+              item: itemName.toString(),
+              amount: parseInt(itemAmount),
+              bestbeforedate: itemDate.toString()
+            });
+          } else {
+            props.data[props.row.id - 1] = {
+              id: props.row.id,
+              item: itemName.toString(),
+              amount: parseInt(itemAmount),
+              bestbeforedate: itemDate.toString()
+            }
+          };
+          props.dataUpdate(props.data); console.log(props.data)
+        }}
+        disabled={!validInput}
+      >
+      </Button>
+      <Button
+        title='Cancel'
+        style={styles.button}
+        onPress={() => props.toggleModal(false)} />
+    </View>
   </Modal>)
 }
 const Inventory = (props) => {
-  const [sortDirection, changeSortDirection] = useState('asc')
-  const [sortedData, sortData] = useState(lodash.orderBy(props.data, 'bestbeforedate', sortDirection))
+  function sortData(column) {
+    if (column === 'item') {
+      return lodash.orderBy(props.data, [item => item.item.toLowerCase()], props.sortDirection)
+    } else {
+    return lodash.orderBy(props.data, column, props.sortDirection)
+    }
+  }
+  const sortedData = sortData(props.sortedColumn)
   const displayData = sortedData.map((item) =>
     <DataTable.Row onPress={() => { props.selectItem(item); props.toggleModal(true) }} key={item.id}>
       <DataTable.Cell>{item.item}</DataTable.Cell>
       <DataTable.Cell>{item.amount}</DataTable.Cell>
       <DataTable.Cell>{dayjs(item.bestbeforedate).format('DD/MM/YYYY')}</DataTable.Cell>
     </DataTable.Row>)
-  function orderData(column) {
+  return (
+    <DataTable>
+      <DataTable.Header>
+        <DataTable.Title onPress={() => props.chooseSort('item')}>Item</DataTable.Title>
+        <DataTable.Title onPress={() => props.chooseSort('amount')}>Amount </DataTable.Title>
+        <DataTable.Title /*sortDirection={'ascending'}*/ onPress={() => props.chooseSort('bestbeforedate')}>Best Before Date</DataTable.Title>
+      </DataTable.Header>
+      {displayData}
+    </DataTable>
+  )
+}
+export default function App() {
+  const [sortDirection, changeSortDirection] = useState('asc')
+  const [sortedColumn, changeSortedColumn] = useState('bestbeforedate')
+  function chooseSort(column) {
     if (column === sortedColumn) {
       if (sortDirection === 'asc') {
         changeSortDirection('desc')
@@ -116,28 +141,11 @@ const Inventory = (props) => {
         changeSortDirection('asc')
       }
     } else {
-      sortedColumn = column
       changeSortDirection('asc')
     }
-    if (column === 'item') {
-      sortData(lodash.orderBy(props.data, [item => item.item.toLowerCase()], sortDirection))
-    } else {
-    sortData(lodash.orderBy(props.data, column, sortDirection))
-    }
+    changeSortedColumn(column)
   }
-  return (
-    <DataTable>
-      <DataTable.Header>
-        <DataTable.Title onPress={() => orderData('item')}>Item</DataTable.Title>
-        <DataTable.Title onPress={() => orderData('amount')}>Amount </DataTable.Title>
-        <DataTable.Title /*sortDirection={'ascending'}*/ onPress={() => orderData('bestbeforedate')}>Best Before Date</DataTable.Title>
-      </DataTable.Header>
-      {displayData}
-    </DataTable>
-  )
-}
-export default function App() {
-  const [data, updateData] = useState([
+  const defaultData = [
     {
       id: 1,
       item: "Beans",
@@ -156,22 +164,42 @@ export default function App() {
       amount: 5,
       bestbeforedate: "2021-05-21"
     },
-  ])
+  ]
   const [modalVisible, setModalVisible] = useState(false);
   const blankItem = {
     id: "",
     item: "",
     amount: "",
-    bestbeforedate: ""
+    bestbeforedate: new Date()
   };
   const [currentItem, setCurrentItem] = useState(blankItem)
+  const storeData = async (value) => {
+    try {
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem('inventory', jsonValue)
+    } catch (e) {
+      // saving error
+    }
+  }
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('inventory')
+      const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultData;
+      return newLocal;
+    } catch (e) {
+      // error reading value
+    }
+  }
+  const [data, updateData] = useState([])
   function dataUpdate(dataToBeUpdated) {
     updateData(dataToBeUpdated)
+    storeData(dataToBeUpdated)
   }
+  getData().then((value) => updateData(value));
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Inventory data={data} selectItem={setCurrentItem} toggleModal={setModalVisible} />
+      <Inventory data={data} selectItem={setCurrentItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
       <Button
         title="Add Item"
         onPress={() => { setModalVisible(true); setCurrentItem(blankItem) }}
@@ -196,6 +224,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
     height: '100%',
-    width: '100%' 
+    width: '100%'
   }
 });
