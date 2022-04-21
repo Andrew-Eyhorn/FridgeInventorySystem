@@ -112,6 +112,13 @@ const Inventory = (props) => {
     return lodash.orderBy(props.data, column, props.sortDirection)
     }
   }
+  function displaySort(column) {
+    if (column === props.sortedColumn) {
+      if (props.sortDirection === 'asc') {
+        return 'ascending'
+      } else {return 'descending'}
+    } else {return null}
+  }
   const sortedData = sortData(props.sortedColumn)
   const displayData = sortedData.map((item) =>
     <DataTable.Row onPress={() => { props.selectItem(item); props.toggleModal(true) }} key={item.id}>
@@ -122,9 +129,9 @@ const Inventory = (props) => {
   return (
     <DataTable>
       <DataTable.Header>
-        <DataTable.Title onPress={() => props.chooseSort('item')}>Item</DataTable.Title>
-        <DataTable.Title onPress={() => props.chooseSort('amount')}>Amount </DataTable.Title>
-        <DataTable.Title /*sortDirection={'ascending'}*/ onPress={() => props.chooseSort('bestbeforedate')}>Best Before Date</DataTable.Title>
+        <DataTable.Title sortDirection={displaySort('item')} onPress={() => props.chooseSort('item')}>Item</DataTable.Title>
+        <DataTable.Title sortDirection={displaySort('amount')} onPress={() => props.chooseSort('amount')}>Amount </DataTable.Title>
+        <DataTable.Title sortDirection={displaySort('bestbeforedate')} onPress={() => props.chooseSort('bestbeforedate')}>Best Before Date</DataTable.Title>
       </DataTable.Header>
       {displayData}
     </DataTable>
