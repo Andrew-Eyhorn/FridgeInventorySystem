@@ -7,25 +7,24 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const lodash = require("lodash");
 const ItemInput = (props) => {
-  const [itemName, setItemName] = useState(props.row.item);
-  const [itemAmount, setItemAmount] = useState(props.row.amount);
-  const [itemDate, setItemDate] = useState(props.row.bestbeforedate);
   useEffect(() => {
     validation()
-  }, [itemName, itemAmount])
+  }, [props.selectedItem])
   function onTextChanged(text) {
-    setItemAmount(text.replace(/[^0-9]/g, '')
-    )
+    props.editItem((prevstate) => ({
+      ...prevstate,
+      amount: text.replace(/[^0-9]/g, '')
+    }
+    ))
   }
   const [validInput, validateInput] = useState(false)
   function validation() {
     let isValid = false;
-    if (itemName.trim() !== '' && itemAmount.trim() !== '') {
+    if (props.selectedItem.item.trim() !== '' && props.selectedItem.amount.toString().trim() !== '') {
       isValid = true;
     }
     if (isValid !== validInput) {
       validateInput(isValid);
-
     }
   }
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -36,7 +35,11 @@ const ItemInput = (props) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = (date) => {
-    setItemDate(dayjs(date).format('YYYY-MM-DD'))
+    props.editItem((prevstate) => ({
+      ...prevstate,
+      bestBeforeDate: dayjs(date).format('YYYY-MM-DD')
+    }
+    ))
     validation()
     hideDatePicker();
   };
@@ -54,17 +57,21 @@ const ItemInput = (props) => {
       <TextInput
         style={{ height: '10%' }}
         placeholder="Enter Name of Item"
-        onChangeText={newText => setItemName(newText)}
-        defaultValue={props.row.item}
+        onChangeText={newText => props.editItem((prevstate) => ({
+          ...prevstate,
+          item: newText
+        }
+        ))}
+        value={props.selectedItem.item}
       />
       <TextInput
         style={{ height: '10%' }}
         placeholder="Enter Amount of this Item"
         keyboardType='numeric'
         onChangeText={value => onTextChanged(value)}
-        value={itemAmount}
+        value={props.selectedItem.amount.toString()}
       />
-      <Text>{dayjs(itemDate).format('DD/MM/YYYY')}</Text>
+      <Text>{dayjs(props.selectedItem.bestBeforeDate).format('DD/MM/YYYY')}</Text>
       <Button title="Show Date Picker" onPress={showDatePicker} />
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
@@ -76,20 +83,19 @@ const ItemInput = (props) => {
         title='Confirm'
         onPress={() => {
           props.toggleModal(false);
-          console.log(props.row.id)
-          if (props.row.id === '') {
+          if (props.selectedItem.id === '') {
             props.data.push({
               id: props.data.length + 1,
-              item: itemName.toString(),
-              amount: parseInt(itemAmount),
-              bestbeforedate: itemDate.toString()
+              item: props.selectedItem.item.toString(),
+              amount: parseInt(props.selectedItem.amount),
+              bestBeforeDate: props.selectedItem.bestBeforeDate.toString()
             });
           } else {
-            props.data[props.row.id - 1] = {
-              id: props.row.id,
-              item: itemName.toString(),
-              amount: parseInt(itemAmount),
-              bestbeforedate: itemDate.toString()
+            props.data[props.selectedItem.id - 1] = {
+              id: props.selectedItem.id,
+              item: props.selectedItem.item.toString(),
+              amount: parseInt(props.selectedItem.amount),
+              bestBeforeDate: props.selectedItem.bestBeforeDate
             }
           };
           props.dataUpdate(props.data); console.log(props.data)
@@ -121,17 +127,20 @@ const Inventory = (props) => {
   }
   const sortedData = sortData(props.sortedColumn)
   const displayData = sortedData.map((item) =>
-    <DataTable.Row onPress={() => { props.selectItem(item); props.toggleModal(true) }} key={item.id}>
+    <DataTable.Row onPress={() => { 
+      props.selectItem(item); 
+      props.selectItem2(item);
+      props.toggleModal(true) }} key={item.id}>
       <DataTable.Cell>{item.item}</DataTable.Cell>
       <DataTable.Cell>{item.amount}</DataTable.Cell>
-      <DataTable.Cell>{dayjs(item.bestbeforedate).format('DD/MM/YYYY')}</DataTable.Cell>
+      <DataTable.Cell>{dayjs(item.bestBeforeDate).format('DD/MM/YYYY')}</DataTable.Cell>
     </DataTable.Row>)
   return (
     <DataTable>
       <DataTable.Header>
         <DataTable.Title sortDirection={displaySort('item')} onPress={() => props.chooseSort('item')}>Item</DataTable.Title>
         <DataTable.Title sortDirection={displaySort('amount')} onPress={() => props.chooseSort('amount')}>Amount </DataTable.Title>
-        <DataTable.Title sortDirection={displaySort('bestbeforedate')} onPress={() => props.chooseSort('bestbeforedate')}>Best Before Date</DataTable.Title>
+        <DataTable.Title sortDirection={displaySort('bestBeforeDate')} onPress={() => props.chooseSort('bestBeforeDate')}>Best Before Date</DataTable.Title>
       </DataTable.Header>
       {displayData}
     </DataTable>
@@ -139,7 +148,7 @@ const Inventory = (props) => {
 }
 export default function App() {
   const [sortDirection, changeSortDirection] = useState('asc')
-  const [sortedColumn, changeSortedColumn] = useState('bestbeforedate')
+  const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
   function chooseSort(column) {
     if (column === sortedColumn) {
       if (sortDirection === 'asc') {
@@ -157,19 +166,19 @@ export default function App() {
       id: 1,
       item: "Beans",
       amount: 1988,
-      bestbeforedate: "2020-01-15"
+      bestBeforeDate: "2020-01-15"
     },
     {
       id: 2,
       item: "Eggs",
       amount: 5,
-      bestbeforedate: "2021-07-29"
+      bestBeforeDate: "2021-07-29"
     },
     {
       id: 3,
       item: "Milk",
       amount: 5,
-      bestbeforedate: "2021-05-21"
+      bestBeforeDate: "2021-05-21"
     },
   ]
   const [modalVisible, setModalVisible] = useState(false);
@@ -177,9 +186,10 @@ export default function App() {
     id: "",
     item: "",
     amount: "",
-    bestbeforedate: new Date()
+    bestBeforeDate: new Date()
   };
   const [currentItem, setCurrentItem] = useState(blankItem)
+  const [selectedItem, updateSelectedItem] = useState(currentItem)
   const storeData = async (value) => {
     try {
       const jsonValue = JSON.stringify(value)
@@ -206,12 +216,12 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Inventory data={data} selectItem={setCurrentItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
+      <Inventory data={data} selectItem={setCurrentItem} selectItem2={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
       <Button
         title="Add Item"
-        onPress={() => { setModalVisible(true); setCurrentItem(blankItem) }}
+        onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); setCurrentItem(blankItem) }}
       />
-      <ItemInput row={currentItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+      <ItemInput selectedItem={selectedItem} editItem = {updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
     </View>
 
   );
