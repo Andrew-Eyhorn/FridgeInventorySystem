@@ -106,6 +106,23 @@ const ItemInput = (props) => {
         title='Cancel'
         style={styles.button}
         onPress={() => props.toggleModal(false)} />
+        {props.selectedItem.id !== '' && 
+        <Button
+        title='Delete Item'
+        style={styles.button}
+        color = "#ff0000"
+        onPress={() => Alert.alert(
+          "Item Deletion",
+          "Are you sure you want to delete item " + props.selectedItem.item + " from the inventory?",
+          [
+            {text: "Cancel", style: 'cancel'},
+            {text: "Delete Item", color: "#FF0000", onPress: () => {props.toggleModal(false); lodash.remove(props.data, item => item.id === props.selectedItem.id); props.dataUpdate(props.data);}}
+          ]
+        )}
+        
+        />
+        }
+        
     </View>
   </Modal>)
 }
@@ -128,7 +145,6 @@ const Inventory = (props) => {
   const displayData = sortedData.map((item) =>
     <DataTable.Row onPress={() => { 
       props.selectItem(item); 
-      props.selectItem2(item);
       props.toggleModal(true) }} key={item.id}>
       <DataTable.Cell>{item.item}</DataTable.Cell>
       <DataTable.Cell>{item.amount}</DataTable.Cell>
@@ -187,8 +203,7 @@ export default function App() {
     amount: "",
     bestBeforeDate: new Date()
   };
-  const [currentItem, setCurrentItem] = useState(blankItem)
-  const [selectedItem, updateSelectedItem] = useState(currentItem)
+  const [selectedItem, updateSelectedItem] = useState(blankItem)
   const storeData = async (value) => {
     try {
       const jsonValue = JSON.stringify(value)
@@ -215,10 +230,10 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Inventory data={data} selectItem={setCurrentItem} selectItem2={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
+      <Inventory data={data} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
       <Button
         title="Add Item"
-        onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); setCurrentItem(blankItem) }}
+        onPress={() => { updateSelectedItem(blankItem); setModalVisible(true);}}
       />
       <ItemInput selectedItem={selectedItem} editItem = {updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
     </View>
