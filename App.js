@@ -226,11 +226,27 @@ export default function App() {
     updateData(dataToBeUpdated)
     storeData(dataToBeUpdated)
   }
+  const [filterTerm, changeFilterTerm] = useState('')
+  function filterData(itemList, searchString) {
+    if (searchString !== '') {
+    let filteredResults =[];
+    for (let item of itemList) {
+      if (String(item.item).includes(searchString)) {filteredResults.push(item)}
+    }
+    return(filteredResults)
+  }
+  return(itemList)
+  }
   getData().then((value) => updateData(value));
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <Inventory data={data} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
+      <TextInput
+        style={{ height: '10%' }}
+        placeholder="Filter List by Item Name"
+        onChangeText={value => changeFilterTerm(value)}
+      />
+      <Inventory data={filterData(data, filterTerm)} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
       <Button
         title="Add Item"
         onPress={() => { updateSelectedItem(blankItem); setModalVisible(true);}}
