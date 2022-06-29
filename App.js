@@ -5,6 +5,7 @@ import { DataTable } from 'react-native-paper';
 import dayjs from 'dayjs'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
 const lodash = require("lodash");
 const ItemInput = (props) => {
   useEffect(() => {
@@ -85,20 +86,18 @@ const ItemInput = (props) => {
           props.toggleModal(false);
           if (props.selectedItem.id === '') {
             props.data.push({
-              id: props.data.length + 1,
+              id: uuid.v4(),
               item: props.selectedItem.item.toString(),
               amount: parseInt(props.selectedItem.amount),
               bestBeforeDate: props.selectedItem.bestBeforeDate.toString()
             });
           } else {
-            props.data[props.selectedItem.id - 1] = {
-              id: props.selectedItem.id,
-              item: props.selectedItem.item.toString(),
-              amount: parseInt(props.selectedItem.amount),
-              bestBeforeDate: props.selectedItem.bestBeforeDate
-            }
-          };
-          props.dataUpdate(props.data); console.log(props.data)
+            let editedItem = props.data.find(row => row.id === props.selectedItem.id);
+            editedItem.item = props.selectedItem.item.toString();
+            editedItem.amount = parseInt(props.selectedItem.amount);
+            editedItem.bestBeforeDate = props.selectedItem.bestBeforeDate;            
+          }
+          props.dataUpdate(props.data); 
         }}
         disabled={!validInput}
       >
@@ -163,19 +162,19 @@ export default function App() {
   }
   const defaultData = [
     {
-      id: 1,
+      id: "65533777-9d9a-4498-aace-279890c2a887",
       item: "Beans",
       amount: 1988,
       bestBeforeDate: "2020-01-15"
     },
     {
-      id: 2,
+      id: "4880dc0f-3040-4573-8ced-8127b698a8fe",
       item: "Eggs",
       amount: 5,
       bestBeforeDate: "2021-07-29"
     },
     {
-      id: 3,
+      id: "c9af5a25-d7ee-422a-b260-ce502a271c0f",
       item: "Milk",
       amount: 5,
       bestBeforeDate: "2021-05-21"
