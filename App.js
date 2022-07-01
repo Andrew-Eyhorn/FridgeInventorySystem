@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Alert, Modal, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, Alert, Modal, TextInput, Button, ScrollView } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import dayjs from 'dayjs'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -23,7 +23,7 @@ const ItemInput = (props) => {
   const [validInput, validateInput] = useState(false)
   function validation() {
     let isValid = false;
-    if (props.selectedItem.item.trim() !== '' && props.selectedItem.amount.toString().trim() !== '') {
+    if (props.selectedItem.name.trim() !== '' && props.selectedItem.amount.toString().trim() !== '') {
       isValid = true;
     }
     if (isValid !== validInput) {
@@ -62,10 +62,10 @@ const ItemInput = (props) => {
         placeholder="Enter Name of Item"
         onChangeText={newText => props.editItem((prevstate) => ({
           ...prevstate,
-          item: newText
+          name: newText
         }
         ))}
-        value={props.selectedItem.item}
+        value={props.selectedItem.name}
       />
       <TextInput
         style={{ height: '10%' }}
@@ -81,34 +81,34 @@ const ItemInput = (props) => {
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
-      /> }
+      />}
       <Button
         title='Confirm'
         onPress={() => {
           props.toggleModal(false);
           if (props.selectedItem.id === '') {
-            if (props.table === 'inventory' ) {
-            props.data.push({
-              id: uuid.v4(),
-              item: props.selectedItem.item.toString(),
-              amount: parseInt(props.selectedItem.amount),
-              bestBeforeDate: props.selectedItem.bestBeforeDate.toString()
-            });
-          }
-          else {
-            props.data.push({
-              id: uuid.v4(),
-              item: props.selectedItem.item.toString(),
-              amount: parseInt(props.selectedItem.amount),
-            });
-          }
+            if (props.table === 'inventory') {
+              props.data.push({
+                id: uuid.v4(),
+                name: props.selectedItem.name.toString(),
+                amount: parseInt(props.selectedItem.amount),
+                bestBeforeDate: props.selectedItem.bestBeforeDate.toString()
+              });
+            }
+            else {
+              props.data.push({
+                id: uuid.v4(),
+                name: props.selectedItem.name.toString(),
+                amount: parseInt(props.selectedItem.amount),
+              });
+            }
           } else {
             let editedItem = props.data.find(row => row.id === props.selectedItem.id);
-            editedItem.item = props.selectedItem.item.toString();
+            editedItem.name = props.selectedItem.name.toString();
             editedItem.amount = parseInt(props.selectedItem.amount);
-            if (props.table === 'inventory' ) {editedItem.bestBeforeDate = props.selectedItem.bestBeforeDate; }           
+            if (props.table === 'inventory') { editedItem.bestBeforeDate = props.selectedItem.bestBeforeDate; }
           }
-          props.dataUpdate(props.data); 
+          props.dataUpdate(props.data);
         }}
         disabled={!validInput}
       >
@@ -117,54 +117,55 @@ const ItemInput = (props) => {
         title='Cancel'
         style={styles.button}
         onPress={() => props.toggleModal(false)} />
-        {props.selectedItem.id !== '' && 
+      {props.selectedItem.id !== '' &&
         <Button
-        title='Delete Item'
-        style={styles.button}
-        color = "#ff0000"
-        onPress={() => Alert.alert(
-          "Item Deletion",
-          "Are you sure you want to delete item " + props.selectedItem.item + " from the inventory?",
-          [
-            {text: "Cancel", style: 'cancel'},
-            {text: "Delete Item", color: "#FF0000", onPress: () => {props.toggleModal(false); lodash.remove(props.data, item => item.id === props.selectedItem.id); props.dataUpdate(props.data);}}
-          ]
-        )}
-        
+          title='Delete Item'
+          style={styles.button}
+          color="#ff0000"
+          onPress={() => Alert.alert(
+            "Item Deletion",
+            "Are you sure you want to delete item " + props.selectedItem.name + " from the inventory?",
+            [
+              { text: "Cancel", style: 'cancel' },
+              { text: "Delete Item", color: "#FF0000", onPress: () => { props.toggleModal(false); lodash.remove(props.data, item => item.id === props.selectedItem.id); props.dataUpdate(props.data); } }
+            ]
+          )}
+
         />
-        }
-        
+      }
+
     </View>
   </Modal>)
 }
 const Inventory = (props) => {
   function sortData(column) {
-    if (column === 'item') {
-      return lodash.orderBy(props.data, [item => item.item.toLowerCase()], props.sortDirection)
+    if (column === 'name') {
+      return lodash.orderBy(props.data, [item => item.name.toLowerCase()], props.sortDirection)
     } else {
-    return lodash.orderBy(props.data, column, props.sortDirection)
+      return lodash.orderBy(props.data, column, props.sortDirection)
     }
   }
   function displaySort(column) {
     if (column === props.sortedColumn) {
       if (props.sortDirection === 'asc') {
         return 'ascending'
-      } else {return 'descending'}
-    } else {return null}
+      } else { return 'descending' }
+    } else { return null }
   }
   const sortedData = sortData(props.sortedColumn)
   const displayData = sortedData.map((item) =>
-    <DataTable.Row onPress={() => { 
-      props.selectItem(item); 
-      props.toggleModal(true) }} key={item.id}>
-      <DataTable.Cell>{item.item}</DataTable.Cell>
+    <DataTable.Row onPress={() => {
+      props.selectItem(item);
+      props.toggleModal(true)
+    }} key={item.id}>
+      <DataTable.Cell>{item.name}</DataTable.Cell>
       <DataTable.Cell>{item.amount}</DataTable.Cell>
       <DataTable.Cell>{dayjs(item.bestBeforeDate).format('DD/MM/YYYY')}</DataTable.Cell>
     </DataTable.Row>)
   return (
     <DataTable>
       <DataTable.Header>
-        <DataTable.Title sortDirection={displaySort('item')} onPress={() => props.chooseSort('item')}>Item</DataTable.Title>
+        <DataTable.Title sortDirection={displaySort('name')} onPress={() => props.chooseSort('name')}>Item</DataTable.Title>
         <DataTable.Title sortDirection={displaySort('amount')} onPress={() => props.chooseSort('amount')}>Amount</DataTable.Title>
         <DataTable.Title sortDirection={displaySort('bestBeforeDate')} onPress={() => props.chooseSort('bestBeforeDate')}>Best Before Date</DataTable.Title>
       </DataTable.Header>
@@ -174,38 +175,39 @@ const Inventory = (props) => {
 }
 const IdealInventory = (props) => {
   function sortData(column) {
-    if (column === 'item') {
-      return lodash.orderBy(props.data, [item => item.item.toLowerCase()], props.sortDirection)
+    if (column === 'name') {
+      return lodash.orderBy(props.data, [item => item.name.toLowerCase()], props.sortDirection)
     } else {
-    return lodash.orderBy(props.data, column, props.sortDirection)
+      return lodash.orderBy(props.data, column, props.sortDirection)
     }
   }
   function displaySort(column) {
     if (column === props.sortedColumn) {
       if (props.sortDirection === 'asc') {
         return 'ascending'
-      } else {return 'descending'}
-    } else {return null}
+      } else { return 'descending' }
+    } else { return null }
   }
   const sortedData = sortData(props.sortedColumn)
   const displayData = sortedData.map((item) =>
-    <DataTable.Row onPress={() => { 
-      props.selectItem(item); 
-      props.toggleModal(true) }} key={item.id}> 
-      <DataTable.Cell>{item.item}</DataTable.Cell>
+    <DataTable.Row onPress={() => {
+      props.selectItem(item);
+      props.toggleModal(true)
+    }} key={item.id}>
+      <DataTable.Cell>{item.name}</DataTable.Cell>
       <DataTable.Cell>{item.amount}</DataTable.Cell>
     </DataTable.Row>)
   return (
     <DataTable>
       <DataTable.Header>
-        <DataTable.Title sortDirection={displaySort('item')} onPress={() => props.chooseSort('item')}>Item</DataTable.Title>
+        <DataTable.Title sortDirection={displaySort('name')} onPress={() => props.chooseSort('name')}>Item</DataTable.Title>
         <DataTable.Title sortDirection={displaySort('amount')} onPress={() => props.chooseSort('amount')}>Amount</DataTable.Title>
       </DataTable.Header>
       {displayData}
     </DataTable>
   )
 }
-const MainScreen = ({navigation}) => {
+const MainScreen = ({ navigation }) => {
   const [sortDirection, changeSortDirection] = useState('asc')
   const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
   function chooseSort(column) {
@@ -223,19 +225,19 @@ const MainScreen = ({navigation}) => {
   const defaultData = [
     {
       id: "65533777-9d9a-4498-aace-279890c2a887",
-      item: "Beans",
+      name: "Beans",
       amount: 1988,
       bestBeforeDate: "2020-01-15"
     },
     {
       id: "4880dc0f-3040-4573-8ced-8127b698a8fe",
-      item: "Eggs",
+      name: "Eggs",
       amount: 5,
       bestBeforeDate: "2021-07-29"
     },
     {
       id: "c9af5a25-d7ee-422a-b260-ce502a271c0f",
-      item: "Milk",
+      name: "Milk",
       amount: 5,
       bestBeforeDate: "2021-05-21"
     },
@@ -243,7 +245,7 @@ const MainScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const blankItem = {
     id: "",
-    item: "",
+    name: "",
     amount: "",
     bestBeforeDate: new Date()
   };
@@ -273,41 +275,42 @@ const MainScreen = ({navigation}) => {
   const [filterTerm, changeFilterTerm] = useState('')
   function filterData(itemList, searchString) {
     if (searchString !== '') {
-    let filteredResults =[];
-    for (let item of itemList) {
-      if (String(item.item).includes(searchString)) {filteredResults.push(item)}
+      let filteredResults = [];
+      for (let item of itemList) {
+        if (String(item.name).includes(searchString)) { filteredResults.push(item) }
+      }
+      return (filteredResults)
     }
-    return(filteredResults)
-  }
-  return(itemList)
+    return (itemList)
   }
   getData().then((value) => updateData(value));
-  return(
- <View style={styles.container}>
-  <StatusBar style="auto" />
-  <TextInput
-    style={{ height: '10%' }}
-    placeholder="Filter List by Item Name"
-    onChangeText={value => changeFilterTerm(value)}
-  />
-  <Inventory data={filterData(data, filterTerm)} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
-  <Button
-    title="Add Item"
-    onPress={() => { updateSelectedItem(blankItem); setModalVisible(true);}}
-  />
-  <ItemInput table = 'inventory' selectedItem={selectedItem} editItem = {updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
-  <View>
-    <Button
-    title = "Go to Shopping List"
-    onPress = {() => navigation.navigate('Items that should be in Inventory')}/>
+  return (
+    <View style={styles.container}>
+      <StatusBar style="auto" />
+      <TextInput
+        style={{ height: '10%' }}
+        placeholder="Filter List by Item Name"
+        onChangeText={value => changeFilterTerm(value)}
+      />
+      <Inventory data={filterData(data, filterTerm)} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
+      <Button
+        title="Add Item"
+        onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); }}
+      />
+      <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+      <View>
+        <Button
+          title="Go to Shopping List"
+          onPress={() => navigation.navigate('Items that should be in Inventory', {inventoryData: data,})} />
+      </View>
     </View>
-</View>
   )
 }
-const Screen2 = () => {
-//data and functions here
-const [sortDirection, changeSortDirection] = useState('asc')
+const Screen2 = ({route, navigation}) => {
+  //data and functions here
+  const [sortDirection, changeSortDirection] = useState('asc')
   const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
+  const {inventoryData} = route.params;
   function chooseSort(column) {
     if (column === sortedColumn) {
       if (sortDirection === 'asc') {
@@ -323,18 +326,18 @@ const [sortDirection, changeSortDirection] = useState('asc')
   const defaultIdealData = [
     {
       id: "3df5a568-8085-40a6-9e37-276cb6454282",
-      item: "Eggs",
+      name: "Eggs",
       amount: 3,
     },
     {
       id: "b3d27605-fa02-49dd-a4d6-6c5b678de76c",
-      item: "Milk",
+      name: "Milk",
       amount: 2,
     },
   ]
   const blankItem = {
     id: "",
-    item: "",
+    name: "",
     amount: "",
     bestBeforeDate: new Date()
   };
@@ -343,14 +346,14 @@ const [sortDirection, changeSortDirection] = useState('asc')
   const storeData = async (value) => {
     try {
       const jsonValue = JSON.stringify(value)
-      await AsyncStorage.setItem('inventory', jsonValue)
+      await AsyncStorage.setItem('idealInventory', jsonValue)
     } catch (e) {
       // saving error
     }
   }
   const getData = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('inventory')
+      const jsonValue = await AsyncStorage.getItem('idealInventory')
       const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultIdealData;
       return newLocal;
     } catch (e) {
@@ -362,41 +365,82 @@ const [sortDirection, changeSortDirection] = useState('asc')
     updateData(dataToBeUpdated)
     storeData(dataToBeUpdated)
   }
-//shopping list array
-
-//fucntion for showing missing items
-
-//components
-getData().then((value) => updateData(value));
-return(
-<View style={styles.container}>
-<Button
-    title="Add Item"
-    onPress={() => { updateSelectedItem(blankItem); setModalVisible(true);}}
-  />
-  <IdealInventory data={data} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
-  <ItemInput table = 'idealInventory' selectedItem={selectedItem} editItem = {updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
-  {//table with just 2 rows, name and amount
-  //add item to table button
-  //button that creates a missing items list popup
+  //fucntion for showing missing items
+  function findMissingItems(neededItems, itemList) {
+    let missingItems = [];
+    for (let neededItem of neededItems) {
+      let itemFound = false
+      for (let item of itemList) {
+        if (neededItem.name === item.name && neededItem.amount > item.amount) {
+          missingItems.push({
+            name: neededItem.name,
+            amount: neededItem.amount - item.amount
+          })
+          itemFound = true;
+          break;
+        } else if (neededItem.name === item.name) { itemFound = true; break; }
+      }
+      if (!itemFound) {
+        missingItems.push({
+        name: neededItem.name,
+        amount: neededItem.amount
+      });
+    }
+    }
+    return missingItems
   }
+  let [missingItems, updateMissingItems] = useState([]);
+  const [shoppingListModalShown, toggleShoppingListModal] = useState(false)
+  //components
+  getData().then((value) => updateData(value));
+  return (
+    <View style={styles.container}>
+      <Button
+        title="Add Item"
+        onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); }}
+      />
+       <Button
+        title="Generate Missing Items"
+        onPress={() => {updateMissingItems(findMissingItems(data, inventoryData)); toggleShoppingListModal(true);}}
+      />
+      <IdealInventory data={data} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
+      <ItemInput table='idealInventory' selectedItem={selectedItem} editItem={updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+      <Modal
+    animationType="slide"
+    transparent={true}
+    visible={shoppingListModalShown}
+    onRequestClose={() => {
+      Alert.alert("Modal has been closed.");
+      toggleShoppingListModal(!shoppingListModalShown);
+    }}>
+      <View style={styles.modal}>
+  <ScrollView>
+    <Text>{JSON.stringify(missingItems, null, 4)}</Text>
+  </ScrollView>
+  <Button
+        title="Close"
+        onPress={() => {toggleShoppingListModal(false)}}
+      />
 </View>
-);
+  </Modal>
+    </View>
+    
+  );
 }
 export default function App() {
 
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-       <Stack.Navigator>
+      <Stack.Navigator>
         <Stack.Screen
-        name = "Home"
-        component = {MainScreen}
+          name="Home"
+          component={MainScreen}
         />
-      <Stack.Screen
-      name = "Items that should be in Inventory"
-      component = {Screen2}/>
-    </Stack.Navigator>
+        <Stack.Screen
+          name="Items that should be in Inventory"
+          component={Screen2} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
