@@ -50,6 +50,7 @@ const ShoppingListScreen = ({route}) => {
   }
   const getData = async () => {
     try {
+      if (data.length > 0) return data
       const jsonValue = await AsyncStorage.getItem('idealInventory')
       const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultIdealData;
       return newLocal;

@@ -57,6 +57,7 @@ const MainScreen = ({ navigation }) => {
     }
     const getData = async () => {
       try {
+        if (data.length > 0) return data
         const jsonValue = await AsyncStorage.getItem('inventory')
         const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultData;
         return newLocal;
@@ -74,7 +75,7 @@ const MainScreen = ({ navigation }) => {
       if (searchString !== '') {
         let filteredResults = [];
         for (let item of itemList) {
-          if (String(item.name).includes(searchString)) { filteredResults.push(item) }
+          if (String(item.name).toLowerCase().includes(searchString.toLowerCase())) { filteredResults.push(item) }
         }
         return (filteredResults)
       }
