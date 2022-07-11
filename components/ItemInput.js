@@ -1,3 +1,13 @@
+/*Code for generating a modal that allws the user to input or edit item information for either the main or ideal inventory. 
+Inputs: props: 
+selectedItem(will be blank if not editing), 
+editItem function,
+visiblity, to detemrine whether the modal is shown or hdiden, 
+table, to know which inventory is being edited
+data, the daata thats being eidted
+dataupdate - to update the edited daata so the table is displayed.
+
+*/
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Alert, Modal, TextInput, Button} from 'react-native';
 import uuid from 'react-native-uuid';
