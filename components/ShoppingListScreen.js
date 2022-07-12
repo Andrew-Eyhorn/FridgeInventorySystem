@@ -1,3 +1,5 @@
+//Shopping List Screen. A screen that displays 
+
 import React, { useState} from 'react';
 import { StyleSheet, Text, View, Alert, Modal, Button, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
