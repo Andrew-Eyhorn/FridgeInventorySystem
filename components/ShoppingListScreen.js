@@ -104,7 +104,7 @@ const ShoppingListScreen = ({route}) => {
         onPress={() => {updateMissingItems(findMissingItems(data, inventoryData)); toggleShoppingListModal(true);}}
       />
       <IdealInventory data={data} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
-      <ItemInput table='idealInventory' selectedItem={selectedItem} editItem={updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+      <ItemInput table='idealInventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
       <Modal
     animationType="slide"
     transparent={true}

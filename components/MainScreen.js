@@ -95,7 +95,7 @@ const MainScreen = ({ navigation }) => {
           title="Add Item"
           onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); }}
         />
-        <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+        <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
         <View>
           <Button
             title="Go to Shopping List"
