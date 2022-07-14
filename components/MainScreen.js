@@ -1,3 +1,10 @@
+/*
+Default screen that is shown upon opening the program. 
+Contains a table with the inventroy, button for adding items to the inventory, a search filter, and a button to switch to the shopping screen.
+Takes in the input navigation, which allows it to trigger the event that switches to the shopping list screen.
+Exports the main screen. 
+*/
+
 import { StatusBar } from 'expo-status-bar';
 import React, { useState} from 'react';
 import { StyleSheet, View,TextInput, Button} from 'react-native';
