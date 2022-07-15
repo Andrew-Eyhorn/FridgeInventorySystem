@@ -1,3 +1,6 @@
+/*
+THe actual app, conatins a navtigaiton container that has the 2 screens that are displayed.
+*/
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

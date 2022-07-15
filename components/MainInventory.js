@@ -1,3 +1,13 @@
+/*
+Component that displays the inventory data in a table. Takes in the follwing props:
+-data - the data that is being displayed
+-sortdirections - to know which direction the displayed data should be sorted
+-sortedColumn - to know by what property the data is being sorted
+-selectItem() - allows double clicking to select an item
+-toggle mdoal, - give this compoenent access to showing the item input component. 
+-chooseSort - allows the table to change the sortedColumn
+Exports a table with 3 columns, sorted by one of the 3 columns. 
+*/
 import React from 'react';
 import { DataTable } from 'react-native-paper';
 import dayjs from 'dayjs'
