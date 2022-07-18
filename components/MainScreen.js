@@ -1,6 +1,6 @@
 /*
 Default screen that is shown upon opening the program. 
-Contains a table with the inventroy, button for adding items to the inventory, a search filter, and a button to switch to the shopping screen.
+Contains a table with the inventory, button for adding items to the inventory, a search filter, and a button to switch to the shopping screen.
 Takes in the input navigation, which allows it to trigger the event that switches to the shopping list screen.
 Exports the main screen. 
 */

@@ -1,5 +1,5 @@
 /*
-Shopping list screen, that appears when the go to shopping list screen button is pressed on the main screen. 
+Shopping list screen that appears when the go to shopping list screen button is pressed on the main screen. 
 Takes in route which gives this screen access to the main inventory data, needed for the generate missing items function. 
 Exports the shopping list screen.
 */

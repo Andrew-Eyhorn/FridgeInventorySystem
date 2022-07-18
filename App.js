@@ -1,5 +1,5 @@
 /*
-THe actual app, conatins a navtigaiton container that has the 2 screens that are displayed.
+The actual app, contains a navigation container that displays either the main screen or the shopping list screen.
 */
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';

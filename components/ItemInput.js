@@ -1,11 +1,11 @@
 /*
-Code for generating a modal that allws the user to input or edit item information for either the main or ideal inventory. 
+Code for generating a modal that allows the user to input or edit item information for either the main or ideal inventory. 
 Inputs: props: 
 selectedItem(will be blank if not editing, otherwise has the data fo the item being edited), 
 editItem function,
-visiblity, to detemrine whether the modal is shown or hdiden, 
-table, to know which inventory is being edited
-data, the daata thats being edited
+visiblity - to determine whether the modal is shown or hidden, 
+table - to know which inventory is being edited
+data - the daata thats being edited
 dataupdate - to update the edited daata so the table is displayed.
 toggleModal - function for toggling the modal
 Output: 
@@ -22,6 +22,8 @@ const ItemInput = (props) => {
   useEffect(() => {
     validation()
   }, [props.selectedItem])
+  //onTextChanged function serves as validation for the item amount, by making sure any non-numerical characters are removed. 
+  //Function takes in the text in the item amount field. Doesn't need to return anything because it updates the data which is a state.s
   function onTextChanged(text) {
     props.editItem((prevstate) => ({
       ...prevstate,
@@ -30,6 +32,7 @@ const ItemInput = (props) => {
     ))
   }
   const [validInput, validateInput] = useState(false)
+  //This function makes sure the inputs aren't balnk. IF they are blank, then the user shouldn't be able to submit the item adding/editing.
   function validation() {
     let isValid = false;
     if (props.selectedItem.name.trim() !== '' && props.selectedItem.amount.toString().trim() !== '') {
