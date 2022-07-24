@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
       width: '100%'
     },
     textInput: {
-      height: '5%',
+      height: 23,
       borderWidth: 1,
       margin: 3,
       padding: 3,

@@ -1,11 +1,14 @@
 {
   "expo": {
-    "name": "my-react-app",
-    "slug": "my-react-app",
+    "name": "Fridge Inventory System",
+    "slug": "fridge-inventory-system",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "FridgeInventorySystem.apk"
+    }
   },
-  "name": "my-react-app"
+  "name": "fridge-inventory-system"
 }
