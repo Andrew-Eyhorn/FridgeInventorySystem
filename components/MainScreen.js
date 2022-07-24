@@ -111,7 +111,7 @@ const MainScreen = ({ navigation }) => {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <TextInput
-          style={{ height: '5%', borderWidth: 1 }}
+          style={{ height: '5%', borderWidth: 1, padding: 3 }}
           placeholder="Filter List by Item Name"
           onChangeText={value => changeFilterTerm(value)}
         />

@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
       height: '5%',
       borderWidth: 1,
       margin: 3,
+      padding: 3,
     }
   });
 
