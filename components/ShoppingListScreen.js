@@ -10,10 +10,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ItemInput from "./ItemInput"
 import IdealInventory from './IdealInventory';
 const ShoppingListScreen = ({route}) => {
-  //data and functions here
   const [sortDirection, changeSortDirection] = useState('asc')
   const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
   const {inventoryData} = route.params;
+  //toggles between asending and descending sort order, but defaults to ascending if a new column is selected.
+  //takes in the selected column as input
   function chooseSort(column) {
     if (column === sortedColumn) {
       if (sortDirection === 'asc') {
@@ -26,6 +27,7 @@ const ShoppingListScreen = ({route}) => {
     }
     changeSortedColumn(column)
   }
+   //this data is simply here for testing purposes, the actual solution wouldn't have this default data
   const defaultIdealData = [
     {
       id: "3df5a568-8085-40a6-9e37-276cb6454282",
@@ -38,6 +40,7 @@ const ShoppingListScreen = ({route}) => {
       amount: 2,
     },
   ]
+  //this is used for adding a new item
   const blankItem = {
     id: "",
     name: "",
@@ -52,6 +55,7 @@ const ShoppingListScreen = ({route}) => {
       await AsyncStorage.setItem('idealInventory', jsonValue)
     } catch (e) {
       // saving error
+      //change to a alert("msg")
     }
   }
   const getData = async () => {
@@ -62,6 +66,7 @@ const ShoppingListScreen = ({route}) => {
       return newLocal;
     } catch (e) {
       // error reading value
+      //change to a alert("msg")
     }
   }
   const [data, updateData] = useState([])

@@ -14,6 +14,8 @@ import Inventory from "./MainInventory"
 const MainScreen = ({ navigation }) => {
     const [sortDirection, changeSortDirection] = useState('asc')
     const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
+     //toggles between asending and descending sort order, but defaults to ascending if a new column is selected.
+     //takes in the selected column as input
     function chooseSort(column) {
       if (column === sortedColumn) {
         if (sortDirection === 'asc') {
@@ -26,6 +28,7 @@ const MainScreen = ({ navigation }) => {
       }
       changeSortedColumn(column)
     }
+    //this data is simply here for testing purposes, the actual solution wouldn't have this default data
     const defaultData = [
       {
         id: "65533777-9d9a-4498-aace-279890c2a887",
@@ -47,6 +50,7 @@ const MainScreen = ({ navigation }) => {
       },
     ]
     const [modalVisible, setModalVisible] = useState(false);
+    //this is used for adding a new item
     const blankItem = {
       id: "",
       name: "",
@@ -54,12 +58,14 @@ const MainScreen = ({ navigation }) => {
       bestBeforeDate: new Date()
     };
     const [selectedItem, updateSelectedItem] = useState(blankItem)
+    //inventory data is stored as a JSON file
     const storeData = async (value) => {
       try {
         const jsonValue = JSON.stringify(value)
         await AsyncStorage.setItem('inventory', jsonValue)
       } catch (e) {
         // saving error
+        //change to a alert("msg")
       }
     }
     const getData = async () => {
@@ -70,6 +76,7 @@ const MainScreen = ({ navigation }) => {
         return newLocal;
       } catch (e) {
         // error reading value
+        //change to a alert("msg")
       }
     }
     const [data, updateData] = useState([])
@@ -78,6 +85,9 @@ const MainScreen = ({ navigation }) => {
       storeData(dataToBeUpdated)
     }
     const [filterTerm, changeFilterTerm] = useState('')
+    //filter data function does a case insensitive search of the data, and removes any data that doesn't fit the searchString.
+    //Input: the array being searched and the search string.
+    //Output: the filtered array
     function filterData(itemList, searchString) {
       if (searchString !== '') {
         let filteredResults = [];

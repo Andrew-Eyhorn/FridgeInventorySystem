@@ -22,7 +22,7 @@ const Inventory = (props) => {
       }
     }
     //displaysort is just a way of toggling between ascending and decesnding. 
-    //If the column on the datable that is clicked on is different to the currently sorted one, it should be sorted by descedning. 
+    //If the column on the datable that is clicked on is different to the currently sorted one, it should be sorted by ascending. 
     //If the same column is clicked again, then the sorting order should be reversed. 
     //Inputs the column that is clicked on, outputs the order the column should be sorted.
     function displaySort(column) {
