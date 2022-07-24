@@ -11,8 +11,18 @@ import ItemInput from "./ItemInput"
 import IdealInventory from './IdealInventory';
 const ShoppingListScreen = ({route}) => {
   const [sortDirection, changeSortDirection] = useState('asc')
-  const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
+  const [sortedColumn, changeSortedColumn] = useState('name')
   const {inventoryData} = route.params;
+  //this function solves the issue of the table not updating on item deletion, by updating the table twice.
+  function updateSort() {
+    if (sortDirection === 'asc') {
+      changeSortDirection('desc')
+      changeSortDirection('asc')
+    } else {
+      changeSortDirection('asc')
+      changeSortDirection('desc')
+    }
+  }
   //toggles between asending and descending sort order, but defaults to ascending if a new column is selected.
   //takes in the selected column as input
   function chooseSort(column) {
@@ -54,8 +64,7 @@ const ShoppingListScreen = ({route}) => {
       const jsonValue = JSON.stringify(value)
       await AsyncStorage.setItem('idealInventory', jsonValue)
     } catch (e) {
-      // saving error
-      //change to a alert("msg")
+      alert("error saving ideal inventory data")
     }
   }
   const getData = async () => {
@@ -65,8 +74,7 @@ const ShoppingListScreen = ({route}) => {
       const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultIdealData;
       return newLocal;
     } catch (e) {
-      // error reading value
-      //change to a alert("msg")
+      alert("error loading ideal inventory data")
     }
   }
   const [data, updateData] = useState([])
@@ -74,6 +82,8 @@ const ShoppingListScreen = ({route}) => {
     updateData(dataToBeUpdated)
     storeData(dataToBeUpdated)
   }
+ const [displayedList, updateDisplay] = useState("") 
+ const [missingItems, updateMissingItems] = useState([]);
   //fucntion for showing missing items
   function findMissingItems(neededItems, itemList) {
     let missingItems = [];
@@ -96,9 +106,13 @@ const ShoppingListScreen = ({route}) => {
       });
     }
     }
+    let listDisplay = ""
+    for (let item of missingItems) {
+       listDisplay += (item.amount + " " + item.name +"\n")
+     };
+     updateDisplay(listDisplay)
     return missingItems
   }
-  let [missingItems, updateMissingItems] = useState([]);
   const [shoppingListModalShown, toggleShoppingListModal] = useState(false)
   //components
   getData().then((value) => updateData(value));
@@ -113,7 +127,7 @@ const ShoppingListScreen = ({route}) => {
         onPress={() => {updateMissingItems(findMissingItems(data, inventoryData)); toggleShoppingListModal(true);}}
       />
       <IdealInventory data={data} selectItem={updateSelectedItem} toggleModal={setModalVisible} sortDirection={sortDirection} sortedColumn={sortedColumn} chooseSort={chooseSort} />
-      <ItemInput table='idealInventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+      <ItemInput table='idealInventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} chooseSort={updateSort}/>
       <Modal
     animationType="slide"
     transparent={true}
@@ -124,7 +138,7 @@ const ShoppingListScreen = ({route}) => {
     }}>
       <View style={styles.modal}>
   <ScrollView>
-    <Text>{JSON.stringify(missingItems, null, 4)}</Text>
+    <Text> {displayedList}</Text>
   </ScrollView>
   <Button
         title="Close"

@@ -14,6 +14,16 @@ import Inventory from "./MainInventory"
 const MainScreen = ({ navigation }) => {
     const [sortDirection, changeSortDirection] = useState('asc')
     const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
+    //this function solves the issue of the table not updating on item deletion, by updating the table twice.
+    function updateSort() {
+      if (sortDirection === 'asc') {
+        changeSortDirection('desc')
+        changeSortDirection('asc')
+      } else {
+        changeSortDirection('asc')
+        changeSortDirection('desc')
+      }
+    }
      //toggles between asending and descending sort order, but defaults to ascending if a new column is selected.
      //takes in the selected column as input
     function chooseSort(column) {
@@ -64,8 +74,7 @@ const MainScreen = ({ navigation }) => {
         const jsonValue = JSON.stringify(value)
         await AsyncStorage.setItem('inventory', jsonValue)
       } catch (e) {
-        // saving error
-        //change to a alert("msg")
+        alert("error saving inventory data")
       }
     }
     const getData = async () => {
@@ -75,8 +84,7 @@ const MainScreen = ({ navigation }) => {
         const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultData;
         return newLocal;
       } catch (e) {
-        // error reading value
-        //change to a alert("msg")
+        alert("error loading inventory data")
       }
     }
     const [data, updateData] = useState([])
@@ -103,7 +111,7 @@ const MainScreen = ({ navigation }) => {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <TextInput
-          style={{ height: '10%' }}
+          style={{ height: '5%', borderWidth: 1 }}
           placeholder="Filter List by Item Name"
           onChangeText={value => changeFilterTerm(value)}
         />
@@ -112,7 +120,7 @@ const MainScreen = ({ navigation }) => {
           title="Add Item"
           onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); }}
         />
-        <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+        <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} chooseSort={updateSort} />
         <View>
           <Button
             title="Go to Shopping List"

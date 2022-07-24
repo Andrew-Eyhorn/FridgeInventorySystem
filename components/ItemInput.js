@@ -63,15 +63,15 @@ const ItemInput = (props) => {
     transparent={true}
     visible={props.visibility}
     onRequestClose={() => {
-      Alert.alert("Modal has been closed.");
-      setModalVisible(!modalVisible);
+      props.toggleModal(false);
     }}
   >
     <View style={styles.modal}>
       <Text>Enter Info</Text>
       <TextInput
-        style={{ height: '10%' }}
+        style={styles.textInput}
         placeholder="Enter Name of Item"
+        maxLength = {50}
         onChangeText={newText => props.editItem((prevstate) => ({
           ...prevstate,
           name: newText
@@ -80,9 +80,10 @@ const ItemInput = (props) => {
         value={props.selectedItem.name}
       />
       <TextInput
-        style={{ height: '10%' }}
+        style={styles.textInput}
         placeholder="Enter Amount of this Item"
         keyboardType='numeric'
+        maxLength = {15}
         onChangeText={value => onTextChanged(value)}
         value={props.selectedItem.amount.toString()}
       />
@@ -121,6 +122,7 @@ const ItemInput = (props) => {
             if (props.table === 'inventory') { editedItem.bestBeforeDate = props.selectedItem.bestBeforeDate; }
           }
           props.dataUpdate(props.data);
+          props.chooseSort(); 
         }}
         disabled={!validInput}
       >
@@ -139,7 +141,7 @@ const ItemInput = (props) => {
             "Are you sure you want to delete item " + props.selectedItem.name + " from the inventory?",
             [
               { text: "Cancel", style: 'cancel' },
-              { text: "Delete Item", color: "#FF0000", onPress: () => { props.toggleModal(false); lodash.remove(props.data, item => item.id === props.selectedItem.id); props.dataUpdate(props.data); } }
+              { text: "Delete Item", color: "#FF0000", onPress: () => { props.toggleModal(false); lodash.remove(props.data, item => item.id === props.selectedItem.id); props.dataUpdate(props.data); props.chooseSort(); }}
             ]
           )}
 
@@ -157,6 +159,11 @@ const styles = StyleSheet.create({
       backgroundColor: 'white',
       height: '100%',
       width: '100%'
+    },
+    textInput: {
+      height: '5%',
+      borderWidth: 1,
+      margin: 3,
     }
   });
 
