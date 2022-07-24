@@ -1,3 +1,10 @@
+/*
+Default screen that is shown upon opening the program. 
+Contains a table with the inventory, button for adding items to the inventory, a search filter, and a button to switch to the shopping screen.
+Takes in the input navigation, which allows it to trigger the event that switches to the shopping list screen.
+Exports the main screen. 
+*/
+
 import { StatusBar } from 'expo-status-bar';
 import React, { useState} from 'react';
 import { StyleSheet, View,TextInput, Button} from 'react-native';
@@ -7,6 +14,18 @@ import Inventory from "./MainInventory"
 const MainScreen = ({ navigation }) => {
     const [sortDirection, changeSortDirection] = useState('asc')
     const [sortedColumn, changeSortedColumn] = useState('bestBeforeDate')
+    //this function solves the issue of the table not updating on item deletion, by updating the table twice.
+    function updateSort() {
+      if (sortDirection === 'asc') {
+        changeSortDirection('desc')
+        changeSortDirection('asc')
+      } else {
+        changeSortDirection('asc')
+        changeSortDirection('desc')
+      }
+    }
+     //toggles between asending and descending sort order, but defaults to ascending if a new column is selected.
+     //takes in the selected column as input
     function chooseSort(column) {
       if (column === sortedColumn) {
         if (sortDirection === 'asc') {
@@ -19,6 +38,7 @@ const MainScreen = ({ navigation }) => {
       }
       changeSortedColumn(column)
     }
+    //this data is simply here for testing purposes, the actual solution wouldn't have this default data
     const defaultData = [
       {
         id: "65533777-9d9a-4498-aace-279890c2a887",
@@ -40,6 +60,7 @@ const MainScreen = ({ navigation }) => {
       },
     ]
     const [modalVisible, setModalVisible] = useState(false);
+    //this is used for adding a new item
     const blankItem = {
       id: "",
       name: "",
@@ -47,12 +68,13 @@ const MainScreen = ({ navigation }) => {
       bestBeforeDate: new Date()
     };
     const [selectedItem, updateSelectedItem] = useState(blankItem)
+    //inventory data is stored as a JSON file
     const storeData = async (value) => {
       try {
         const jsonValue = JSON.stringify(value)
         await AsyncStorage.setItem('inventory', jsonValue)
       } catch (e) {
-        // saving error
+        alert("error saving inventory data")
       }
     }
     const getData = async () => {
@@ -62,7 +84,7 @@ const MainScreen = ({ navigation }) => {
         const newLocal = jsonValue != null ? JSON.parse(jsonValue) : defaultData;
         return newLocal;
       } catch (e) {
-        // error reading value
+        alert("error loading inventory data")
       }
     }
     const [data, updateData] = useState([])
@@ -71,6 +93,9 @@ const MainScreen = ({ navigation }) => {
       storeData(dataToBeUpdated)
     }
     const [filterTerm, changeFilterTerm] = useState('')
+    //filter data function does a case insensitive search of the data, and removes any data that doesn't fit the searchString.
+    //Input: the array being searched and the search string.
+    //Output: the filtered array
     function filterData(itemList, searchString) {
       if (searchString !== '') {
         let filteredResults = [];
@@ -86,7 +111,7 @@ const MainScreen = ({ navigation }) => {
       <View style={styles.container}>
         <StatusBar style="auto" />
         <TextInput
-          style={{ height: '10%' }}
+          style={{ height: '5%', borderWidth: 1 }}
           placeholder="Filter List by Item Name"
           onChangeText={value => changeFilterTerm(value)}
         />
@@ -95,7 +120,7 @@ const MainScreen = ({ navigation }) => {
           title="Add Item"
           onPress={() => { updateSelectedItem(blankItem); setModalVisible(true); }}
         />
-        <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} action='add' visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} />
+        <ItemInput table='inventory' selectedItem={selectedItem} editItem={updateSelectedItem} visibility={modalVisible} dataUpdate={dataUpdate} toggleModal={setModalVisible} data={data} chooseSort={updateSort} />
         <View>
           <Button
             title="Go to Shopping List"
